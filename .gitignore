@@ -1,0 +1,4 @@
+.vscode
+.venv
+train_lstm/.vscode
+train_lstm/build
