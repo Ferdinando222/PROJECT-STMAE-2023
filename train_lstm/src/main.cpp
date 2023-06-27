@@ -43,13 +43,15 @@ int main(int argc, char* argv[])
     model.reset();
 
     // now take the model for a spin :) 
-    std::vector<float> inputs{ 1.0, 2.0, 3.0, 4.0 };
+    std::vector<float> inputs{ 1.0, 2.0, 3.0, 4.0 , 5.0};
     std::vector<float> outputs{};
     outputs.resize(inputs.size(), {});
 
     for (size_t i = 0; i < inputs.size(); ++i)
     {
         outputs[i] = model.forward(&inputs[i]);
+
         std::cout << "in " << inputs[i] << " out: " << outputs[i] << std::endl;
+        
     }
 }

@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio Version 17
+
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Neural Plugin - Standalone Plugin", "Neural Plugin_StandalonePlugin.vcxproj", "{4BF6A349-14A3-61A9-2E2A-4D25563F9ECD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{405082CB-5878-4B32-B258-7B71A47FB32B} = {405082CB-5878-4B32-B258-7B71A47FB32B}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Neural Plugin - VST3", "Neural Plugin_VST3.vcxproj", "{DD492B44-B49B-3F52-3744-CFB19FE10B64}"
+	ProjectSection(ProjectDependencies) = postProject
+		{405082CB-5878-4B32-B258-7B71A47FB32B} = {405082CB-5878-4B32-B258-7B71A47FB32B}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Neural Plugin - Shared Code", "Neural Plugin_SharedCode.vcxproj", "{405082CB-5878-4B32-B258-7B71A47FB32B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DD492B44-B49B-3F52-3744-CFB19FE10B64}.Debug|x64.ActiveCfg = Debug|x64
+		{DD492B44-B49B-3F52-3744-CFB19FE10B64}.Debug|x64.Build.0 = Debug|x64
+		{DD492B44-B49B-3F52-3744-CFB19FE10B64}.Release|x64.ActiveCfg = Release|x64
+		{DD492B44-B49B-3F52-3744-CFB19FE10B64}.Release|x64.Build.0 = Release|x64
+		{4BF6A349-14A3-61A9-2E2A-4D25563F9ECD}.Debug|x64.ActiveCfg = Debug|x64
+		{4BF6A349-14A3-61A9-2E2A-4D25563F9ECD}.Debug|x64.Build.0 = Debug|x64
+		{4BF6A349-14A3-61A9-2E2A-4D25563F9ECD}.Release|x64.ActiveCfg = Release|x64
+		{4BF6A349-14A3-61A9-2E2A-4D25563F9ECD}.Release|x64.Build.0 = Release|x64
+		{405082CB-5878-4B32-B258-7B71A47FB32B}.Debug|x64.ActiveCfg = Debug|x64
+		{405082CB-5878-4B32-B258-7B71A47FB32B}.Debug|x64.Build.0 = Debug|x64
+		{405082CB-5878-4B32-B258-7B71A47FB32B}.Release|x64.ActiveCfg = Release|x64
+		{405082CB-5878-4B32-B258-7B71A47FB32B}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
