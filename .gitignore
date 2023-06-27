@@ -1,5 +1,9 @@
+#ENVIRONMENTS
 .vscode
 .venv
 train_lstm/.vscode
+
+#Build
 train_lstm/build
 build
+Neural Plugin/Builds
