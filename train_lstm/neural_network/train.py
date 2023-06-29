@@ -16,10 +16,10 @@ from torch.utils.tensorboard import SummaryWriter
 run_name="audacity_dist"
 # dataset : need an input and output folder in this folder
 #audio_folder = "../../data/audio_audacity_dist"
-audio_folder = r"C:\Users\Utente\OneDrive - Politecnico di Milano\Immagini\Documenti\Development\Python\Progetto_STMAE\Project_STMAE\data\audio_ht1"
+audio_folder = r"C:\Users\Utente\OneDrive - Politecnico di Milano\Immagini\Documenti\Development\Python\PROJECT-STMAE\PROJECT-STMAE-2023\train_lstm\data\audio_ht1"
 assert os.path.exists(audio_folder), "Audio folder  not found. Looked for " + audio_folder
 # used to render example output during training
-test_file = r"C:\Users\Utente\OneDrive - Politecnico di Milano\Immagini\Documenti\Development\Python\Progetto_STMAE\Project_STMAE\data\guitar.wav"
+test_file = r"C:\Users\Utente\OneDrive - Politecnico di Milano\Immagini\Documenti\Development\Python\PROJECT-STMAE\PROJECT-STMAE-2023\train_lstm\data\guitar.wav"
 assert os.path.exists(test_file), "Test file not found. Looked for " + test_file
 lstm_hidden_size = 32
 learning_rate = 5e-3

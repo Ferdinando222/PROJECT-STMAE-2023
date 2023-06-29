@@ -9,6 +9,11 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include <RTNeural/RTNeural.h>
+#include <filesystem>
+#include <iostream>
+
+using ModelType = RTNeural::ModelT<float, 1, 1, RTNeural::LSTMLayerT<float, 1, 8>, RTNeural::DenseT<float, 8, 1>>;
 
 //==============================================================================
 /**
@@ -55,8 +60,16 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    nlohmann::json get_model_json(std::filesystem::path json_file_path);
+    void loadModel(nlohmann::json modelJson, ModelType& model);
 
 private:
     //==============================================================================
+    float raw_audio;
+    nlohmann::json model_json;
+    ModelType model;
+
+    std::unique_ptr<RTNeural::Model<float>> neuralNet[2];
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NeuralPluginAudioProcessor)
+
 };

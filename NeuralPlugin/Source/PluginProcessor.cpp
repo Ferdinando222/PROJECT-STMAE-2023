@@ -8,6 +8,10 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "RTNeural/RTNeural.h"
+#include <filesystem>
+#include <iostream>
+#include <fstream>
 
 //==============================================================================
 NeuralPluginAudioProcessor::NeuralPluginAudioProcessor()
@@ -22,6 +26,9 @@ NeuralPluginAudioProcessor::NeuralPluginAudioProcessor()
                        )
 #endif
 {
+    model_json = get_model_json("C:/Users/Utente/OneDrive - Politecnico di Milano/Immagini/Documenti/Development/Python/PROJECT-STMAE/PROJECT-STMAE-2023/train_lstm/prove1.json");
+    loadModel(model_json, model);
+    model.reset();
 }
 
 NeuralPluginAudioProcessor::~NeuralPluginAudioProcessor()
@@ -135,6 +142,8 @@ void NeuralPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
+
+
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
     // guaranteed to be empty - they may contain garbage).
@@ -150,11 +159,14 @@ void NeuralPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     // the samples and the outer loop is handling the channels.
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
     {
-        auto* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
+        auto* x = buffer.getWritePointer(ch);
+        for (int n = 0; n < buffer.getNumSamples(); ++n)
+        {
+            float input[] = { x[n] };
+            x[n] = model.forward(input);
+        }
     }
 }
 
@@ -183,9 +195,37 @@ void NeuralPluginAudioProcessor::setStateInformation (const void* data, int size
     // whose contents will have been created by the getStateInformation() call.
 }
 
+nlohmann::json NeuralPluginAudioProcessor::get_model_json(std::filesystem::path json_file_path)
+{
+    std::ifstream json_stream{ json_file_path.string(),std::ifstream::binary };
+    nlohmann::json model_json;
+    json_stream >> model_json;
+    return model_json;
+}
+
+void NeuralPluginAudioProcessor::loadModel(nlohmann::json modelJson,ModelType& model)
+{
+    auto& lstm = model.get<0>();
+    // note that the "lstm." is a prefix used to find the 
+    // lstm data in the json file so your python
+    // needs to name the lstm layer 'lstm' if you use lstm. as your prefix
+    std::string prefix = "lstm.";
+    // for LSTM layers, number of hidden  = number of params in a hidden weight set
+    // divided by 4
+    auto hidden_count = modelJson[prefix + ".weight_ih_l0"].size() / 4;
+    // assert that the number of hidden units is the same as this count
+    // to ensure the json file we are importing matches the model we defined.
+    RTNeural::torch_helpers::loadLSTM<float>(modelJson, prefix, lstm);
+
+    auto& dense = model.get<1>();
+    // as per the lstm prefix, here the json needs a key prefixed with dense. 
+    RTNeural::torch_helpers::loadDense<float>(modelJson, "dense.", dense);
+}
+
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new NeuralPluginAudioProcessor();
 }
+
