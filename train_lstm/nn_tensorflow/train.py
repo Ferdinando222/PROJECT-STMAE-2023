@@ -4,6 +4,7 @@
 import os
 import model as md
 import data as dt
+import save_model as sv
 import tensorflow as tf
 
 # used for the writing of example outputs
@@ -57,3 +58,5 @@ model.compile(optimizer=optimizer, loss='mean_squared_error', metrics=['mse', tf
 
 
 model.fit(train_ds,epochs=1000,validation_data=val_ds, verbose='auto')
+
+#save_model(model,"neural.json")
