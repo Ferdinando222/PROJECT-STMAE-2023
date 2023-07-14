@@ -6,6 +6,7 @@ cmake_minimum_required(VERSION 3.15)
 project(NEURALPLUGIN VERSION 0.0.1)
 
 add_subdirectory("C:/Users/Utente/OneDrive - Politecnico di Milano/Desktop/JUCE" ./JUCE)                    # If you've put JUCE in a subdirectory called JUCE
+set(RTNEURAL_STL ON CACHE BOOL "Use RTNeural with this backend" FORCE)
 add_subdirectory(RTNeural ${CMAKE_CURRENT_BINARY_DIR}/RTNeural)
 include_directories(RTNeural)
 
@@ -36,11 +37,10 @@ target_sources(NeuralPlugin
     NeuralPlugin/Source/PluginProcessor.cpp
     NeuralPlugin/Source/PluginEditor.h
     NeuralPlugin/Source/PluginProcessor.h
-    NeuralPlugin/Source/NeuralModel.cpp
-    NeuralPlugin/Source/NeuralModel.h)
+)
 
 juce_add_binary_data(BinaryData SOURCES
-    train_lstm/prove1.json
+    train_lstm/neural_net_weights.json
 )
 
 set_target_properties(BinaryData PROPERTIES
@@ -65,6 +65,7 @@ target_compile_definitions(NeuralPlugin
 target_link_libraries(NeuralPlugin
     PRIVATE
         juce::juce_audio_utils
+	juce::juce_dsp
     PUBLIC
 	BinaryData
         juce::juce_recommended_config_flags

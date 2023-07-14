@@ -1,49 +1,28 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #pragma once
-
 #include <JuceHeader.h>
 #include <RTNeural/RTNeural.h>
-#include <filesystem>
-#include <iostream>
+using ModelType = RTNeural::ModelT<float, 1, 1, RTNeural::Conv1DT<float,1,1,3,1>, RTNeural::LSTMLayerT<float, 1, 8>, RTNeural::DenseT<float, 8, 1 >> ;
+namespace fs = std::filesystem;
 
-using ModelType = RTNeural::ModelT<float, 1, 1, RTNeural::LSTMLayerT<float, 1, 8>, RTNeural::DenseT<float, 8, 1>>;
 
-//==============================================================================
-/**
-*/
-class NeuralPluginAudioProcessor  : public juce::AudioProcessor
-                            #if JucePlugin_Enable_ARA
-                             , public juce::AudioProcessorARAExtension
-                            #endif
+class NeuralPluginAudioProcessor : public AudioProcessor
 {
 public:
     //==============================================================================
     NeuralPluginAudioProcessor();
-    ~NeuralPluginAudioProcessor() override;
+    ~NeuralPluginAudioProcessor();
 
     //==============================================================================
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
+    void prepareToPlay(double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
-
-   #ifndef JucePlugin_PreferredChannelConfigurations
-    bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
-   #endif
-
-    void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
-
+    bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
+    void processBlock(AudioBuffer<float>&, MidiBuffer&) override;
     //==============================================================================
-    juce::AudioProcessorEditor* createEditor() override;
+    AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override;
 
     //==============================================================================
-    const juce::String getName() const override;
+    const String getName() const override;
 
     bool acceptsMidi() const override;
     bool producesMidi() const override;
@@ -53,23 +32,29 @@ public:
     //==============================================================================
     int getNumPrograms() override;
     int getCurrentProgram() override;
-    void setCurrentProgram (int index) override;
-    const juce::String getProgramName (int index) override;
-    void changeProgramName (int index, const juce::String& newName) override;
+    void setCurrentProgram(int index) override;
+    const String getProgramName(int index) override;
+    void changeProgramName(int index, const String& newName) override;
 
     //==============================================================================
-    void getStateInformation (juce::MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override;
-    nlohmann::json get_model_json(std::filesystem::path json_file_path);
-    void loadModel(nlohmann::json modelJson, ModelType& model);
+    void getStateInformation(MemoryBlock& destData) override;
+    void setStateInformation(const void* data, int sizeInBytes) override;
+    void loadModel(std::ifstream& jsonStream, ModelType& model);
 
 private:
     //==============================================================================
-    float raw_audio;
-    nlohmann::json model_json;
-    ModelType model;
+    AudioProcessorValueTreeState parameters;
 
-    std::unique_ptr<RTNeural::Model<float>> neuralNet[2];
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NeuralPluginAudioProcessor)
+    // input gain
+    std::atomic<float>* inGainDbParam = nullptr;
+    dsp::Gain<float> inputGain;
 
+
+    // models
+    std::atomic<float>* modelTypeParam = nullptr;
+    std::unique_ptr<RTNeural::Model<float>> models[2];
+    // example of model defined at compile-time
+
+    dsp::ProcessorDuplicator<dsp::IIR::Filter<float>, dsp::IIR::Coefficients<float>> dcBlocker;
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(NeuralPluginAudioProcessor)
 };

@@ -19,7 +19,8 @@ void loadModel(std::ifstream& jsonStream, ModelType& model)
     std::string prefix = "lstm.";
     // for LSTM layers, number of hidden  = number of params in a hidden weight set
     // divided by 4
-    auto hidden_count = modelJson[prefix + ".weight_ih_l0"].size() / 4;
+    auto hidden_count = modelJson[prefix + "weight_ih_l0"].size() / 4;
+    auto hidden_count = modelJson[prexix + ""]
     // assert that the number of hidden units is the same as this count
     // to ensure the json file we are importing matches the model we defined.
     RTNeural::torch_helpers::loadLSTM<float>(modelJson, prefix, lstm);

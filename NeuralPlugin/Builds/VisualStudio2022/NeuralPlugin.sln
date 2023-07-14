@@ -2,17 +2,17 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio Version 17
 
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NeuralPlugin - Standalone Plugin", "NeuralPlugin_StandalonePlugin.vcxproj", "{B245D036-E2A9-413D-BB1A-85849DDCCF72}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NeuralPlugin - Standalone Plugin", "NeuralPlugin_StandalonePlugin.vcxproj", "{31C937A1-4989-9CBF-C46A-BFF5DF87D427}"
 	ProjectSection(ProjectDependencies) = postProject
-		{C1EBCEE1-CF79-9248-1020-77074F3B16F6} = {C1EBCEE1-CF79-9248-1020-77074F3B16F6}
+		{79A93651-AF00-F0A7-8D3D-237015D7A365} = {79A93651-AF00-F0A7-8D3D-237015D7A365}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NeuralPlugin - VST3", "NeuralPlugin_VST3.vcxproj", "{4878A308-FEE4-5C95-F39C-53031AEEDEDD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NeuralPlugin - VST3", "NeuralPlugin_VST3.vcxproj", "{46756E69-1E58-2E04-7534-0E6B315DB126}"
 	ProjectSection(ProjectDependencies) = postProject
-		{C1EBCEE1-CF79-9248-1020-77074F3B16F6} = {C1EBCEE1-CF79-9248-1020-77074F3B16F6}
+		{79A93651-AF00-F0A7-8D3D-237015D7A365} = {79A93651-AF00-F0A7-8D3D-237015D7A365}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NeuralPlugin - Shared Code", "NeuralPlugin_SharedCode.vcxproj", "{C1EBCEE1-CF79-9248-1020-77074F3B16F6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NeuralPlugin - Shared Code", "NeuralPlugin_SharedCode.vcxproj", "{79A93651-AF00-F0A7-8D3D-237015D7A365}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,18 +20,18 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4878A308-FEE4-5C95-F39C-53031AEEDEDD}.Debug|x64.ActiveCfg = Debug|x64
-		{4878A308-FEE4-5C95-F39C-53031AEEDEDD}.Debug|x64.Build.0 = Debug|x64
-		{4878A308-FEE4-5C95-F39C-53031AEEDEDD}.Release|x64.ActiveCfg = Release|x64
-		{4878A308-FEE4-5C95-F39C-53031AEEDEDD}.Release|x64.Build.0 = Release|x64
-		{B245D036-E2A9-413D-BB1A-85849DDCCF72}.Debug|x64.ActiveCfg = Debug|x64
-		{B245D036-E2A9-413D-BB1A-85849DDCCF72}.Debug|x64.Build.0 = Debug|x64
-		{B245D036-E2A9-413D-BB1A-85849DDCCF72}.Release|x64.ActiveCfg = Release|x64
-		{B245D036-E2A9-413D-BB1A-85849DDCCF72}.Release|x64.Build.0 = Release|x64
-		{C1EBCEE1-CF79-9248-1020-77074F3B16F6}.Debug|x64.ActiveCfg = Debug|x64
-		{C1EBCEE1-CF79-9248-1020-77074F3B16F6}.Debug|x64.Build.0 = Debug|x64
-		{C1EBCEE1-CF79-9248-1020-77074F3B16F6}.Release|x64.ActiveCfg = Release|x64
-		{C1EBCEE1-CF79-9248-1020-77074F3B16F6}.Release|x64.Build.0 = Release|x64
+		{46756E69-1E58-2E04-7534-0E6B315DB126}.Debug|x64.ActiveCfg = Debug|x64
+		{46756E69-1E58-2E04-7534-0E6B315DB126}.Debug|x64.Build.0 = Debug|x64
+		{46756E69-1E58-2E04-7534-0E6B315DB126}.Release|x64.ActiveCfg = Release|x64
+		{46756E69-1E58-2E04-7534-0E6B315DB126}.Release|x64.Build.0 = Release|x64
+		{31C937A1-4989-9CBF-C46A-BFF5DF87D427}.Debug|x64.ActiveCfg = Debug|x64
+		{31C937A1-4989-9CBF-C46A-BFF5DF87D427}.Debug|x64.Build.0 = Debug|x64
+		{31C937A1-4989-9CBF-C46A-BFF5DF87D427}.Release|x64.ActiveCfg = Release|x64
+		{31C937A1-4989-9CBF-C46A-BFF5DF87D427}.Release|x64.Build.0 = Release|x64
+		{79A93651-AF00-F0A7-8D3D-237015D7A365}.Debug|x64.ActiveCfg = Debug|x64
+		{79A93651-AF00-F0A7-8D3D-237015D7A365}.Debug|x64.Build.0 = Debug|x64
+		{79A93651-AF00-F0A7-8D3D-237015D7A365}.Release|x64.ActiveCfg = Release|x64
+		{79A93651-AF00-F0A7-8D3D-237015D7A365}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
