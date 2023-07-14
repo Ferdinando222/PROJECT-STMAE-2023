@@ -33,6 +33,7 @@ train_ds, val_ds, test_ds = dt.get_train_valid_test_datasets(dataset)
 
 
 print("Creating model")
+model = md.create_model()
 print(model)
 
 print("Creating data loaders")
@@ -51,8 +52,8 @@ test_ds = test_ds.batch(batch_size).shuffle(buffer_size=len(test_ds))
 # Compile the model with the optimizer
 optimizer = tf.keras.optimizers.legacy.Adam()
 
-model = md.create_model()
-model.compile(optimizer=optimizer, loss='mean_squared_error', metrics=['mse', tf.keras.metrics.RootMeanSquaredError(), R_squared])
+
+model.compile(optimizer=optimizer, loss='mean_squared_error', metrics=['mse', tf.keras.metrics.RootMeanSquaredError(), md.R_squared])
 
 
 model.fit(train_ds,epochs=1000,validation_data=val_ds, verbose='auto')
