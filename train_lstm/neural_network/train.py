@@ -16,12 +16,12 @@ from torch.utils.tensorboard import SummaryWriter
 run_name="audacity_dist"
 # dataset : need an input and output folder in this folder
 #audio_folder = "../../data/audio_audacity_dist"
-audio_folder = r"C:\Users\Utente\OneDrive - Politecnico di Milano\Immagini\Documenti\Development\Python\PROJECT-STMAE\PROJECT-STMAE-2023\train_lstm\data\audio_ht1"
+audio_folder = r"C:\Users\Utente\OneDrive - Politecnico di Milano\Immagini\Documenti\Development\Python\PROJECT-STMAE\PROJECT-STMAE-2023\train_lstm\data\my_processed_audio"
 assert os.path.exists(audio_folder), "Audio folder  not found. Looked for " + audio_folder
 # used to render example output during training
 test_file = r"C:\Users\Utente\OneDrive - Politecnico di Milano\Immagini\Documenti\Development\Python\PROJECT-STMAE\PROJECT-STMAE-2023\train_lstm\data\guitar.wav"
 assert os.path.exists(test_file), "Test file not found. Looked for " + test_file
-lstm_hidden_size = 32
+lstm_hidden_size = 8
 learning_rate = 5e-3
 batch_size = 50
 max_epochs = 10000
@@ -35,6 +35,8 @@ dataset = myk_data.generate_dataset(audio_folder + "/input/", audio_folder + "/o
 
 print("Splitting dataset")
 train_ds, val_ds, test_ds = myk_data.get_train_valid_test_datasets(dataset)
+
+print(train_ds,val_ds,test_ds)
 
 print("Looking for GPU power")
 device = myk_train.get_device()
@@ -78,7 +80,7 @@ for epoch in range(max_epochs):
     if best_loss:# save best model so far
         print("Record loss - saving at ", epoch)
         model.save_for_rtneural("model.json")
-    if epoch % 50 == 0:# save an example processed audio file
+    if epoch % 30 == 0:# save an example processed audio file
         myk_evaluate.run_file_through_model(model, test_file, audio_folder + "/" + run_name + str(epoch)+".wav")
     print("epoch, train, val ", epoch, ep_loss, val_loss)
     

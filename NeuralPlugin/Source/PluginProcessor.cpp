@@ -1,9 +1,10 @@
 #include "PluginProcessor.h"
+#include "PluginEditor.h"
 #include <fstream>
 #include <iostream>
 #include <filesystem>
-
 //==============================================================================
+
 NeuralPluginAudioProcessor::NeuralPluginAudioProcessor() :
 #if JUCE_IOS || JUCE_MAC
     AudioProcessor(juce::JUCEApplicationBase::isStandaloneApp() ?
@@ -24,23 +25,17 @@ NeuralPluginAudioProcessor::NeuralPluginAudioProcessor() :
     inGainDbParam = parameters.getRawParameterValue("gain_db");
     modelTypeParam = parameters.getRawParameterValue("model_type");
 
-    auto modelFilePath = "C:/Users/Utente/OneDrive - Politecnico di Milano/Immagini/Documenti/Development/Python/PROJECT-STMAE/neural1.json";
-    auto modelFilePath2 = "C:/Users/Utente/Downloads/RTNeural-example-main/RTNeural-example-main/neural_net_weights.json";
+    auto modelFilePath = "C:/Users/Utente/OneDrive - Politecnico di Milano/Immagini/Documenti/Development/Python/PROJECT-STMAE/neural3.json";
     assert(std::filesystem::exists(modelFilePath));
 
     std::ifstream jsonStream(modelFilePath, std::ifstream::binary);
     nlohmann::json jsonInput;
     jsonStream >> jsonInput;
     models[0] = RTNeural::json_parser::parseJson<float>(jsonInput);
-    DBG("Ciao");
     std::ifstream jsonStream1(modelFilePath, std::ifstream::binary);
     nlohmann::json jsonInput1;
     jsonStream1 >> jsonInput1;
     models[1] = RTNeural::json_parser::parseJson<float>(jsonInput1);
-    DBG("ciao2");
-    //loadModel(jsonStream, models[0]);
-    //std::ifstream jsonStream1(modelFilePath, std::ifstream::binary);
-    //loadModel(jsonStream1, models[1]);
 
 }
 
@@ -113,7 +108,6 @@ void NeuralPluginAudioProcessor::changeProgramName(int index, const String& newN
 //==============================================================================
 void NeuralPluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
-
     *dcBlocker.state = *dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, 35.0f);
 
     dsp::ProcessSpec spec{ sampleRate, static_cast<uint32> (samplesPerBlock), 2 };
@@ -122,8 +116,6 @@ void NeuralPluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPer
     dcBlocker.prepare(spec);
     models[0]->reset();
     models[1]->reset();
-    //models[0].reset();
-    //models[1].reset();
 }
 
 void NeuralPluginAudioProcessor::releaseResources()
@@ -149,30 +141,32 @@ bool NeuralPluginAudioProcessor::isBusesLayoutSupported(const BusesLayout& layou
 
 void NeuralPluginAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    ScopedNoDenormals noDenormals;
-
-    auto totalNumInputChannels = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
-
     dsp::AudioBlock<float> block(buffer);
     dsp::ProcessContextReplacing<float> context(block);
 
-    inputGain.setGainDecibels(inGainDbParam->load() + 25.0f);
-    inputGain.process(context);
-    //for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-    //   buffer.clear(i, 0, buffer.getNumSamples());
+    //inputGain.setGainDecibels(inGainDbParam->load() + 25.0f);
+    //inputGain.process(context);
+    juce::ScopedNoDenormals noDenormals;
+    auto totalNumInputChannels = getTotalNumInputChannels();
+    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+        buffer.clear(i, 0, buffer.getNumSamples());
+
 
     // use compile-time model
+
     for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
     {
         auto* x = buffer.getWritePointer(ch);
         for (int n = 0; n < buffer.getNumSamples(); ++n)
         {
-            float input[] = { x[n] };
-            x[n] = models[ch]->forward(input);
+            float input[] = {x[n],knob_value1,knob_value2,knob_value3};
+
+            x[n] =( models[ch]->forward(input));
+
+            DBG(x[n]);
         }
     }
-
 
     dcBlocker.process(context);
     buffer.applyGain(5.0f);
@@ -186,51 +180,37 @@ bool NeuralPluginAudioProcessor::hasEditor() const
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-AudioProcessorEditor* NeuralPluginAudioProcessor::createEditor()
+juce::AudioProcessorEditor* NeuralPluginAudioProcessor::createEditor()
 {
-    return new GenericAudioProcessorEditor(*this);
+    return new NeuralPluginAudioProcessorEditor(*this);
 }
 
 //==============================================================================
 void NeuralPluginAudioProcessor::getStateInformation(MemoryBlock& destData)
 {
-    auto state = parameters.copyState();
-    std::unique_ptr<XmlElement> xml(state.createXml());
-    copyXmlToBinary(*xml, destData);
+
 }
 
 void NeuralPluginAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
-    std::unique_ptr<XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
 
-    if (xmlState.get() != nullptr)
-        if (xmlState->hasTagName(parameters.state.getType()))
-            parameters.replaceState(ValueTree::fromXml(*xmlState));
 }
 
-
-
-
-void NeuralPluginAudioProcessor::loadModel(std::ifstream& jsonStream, ModelType& model)
+void NeuralPluginAudioProcessor::setValueKnob1(float knob_value)
 {
-
-    nlohmann::json modelJson;
-
-    jsonStream >> modelJson;
-
-    DBG("end");
-
-    auto& conv1d = model.get<0>();
-
-    auto& lstm = model.get<1>();
-    RTNeural::torch_helpers::loadConv1D<float>(modelJson, "conv1d.", conv1d);
-    RTNeural::torch_helpers::loadLSTM<float>(modelJson, "lstm.", lstm);
-
-    auto& dense = model.get<2>();
-    RTNeural::torch_helpers::loadDense<float>(modelJson, "dense.", dense);
-
-
+    knob_value1 = knob_value;
 }
+
+void NeuralPluginAudioProcessor::setValueKnob2(float knob_value)
+{
+    knob_value2 = knob_value;
+}
+
+void NeuralPluginAudioProcessor::setValueKnob3(float knob_value)
+{
+    knob_value3 = knob_value;
+}
+
 
 //==============================================================================
 // This creates new instances of the plugin..

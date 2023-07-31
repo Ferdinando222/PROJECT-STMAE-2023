@@ -1,16 +1,17 @@
 #pragma once
 #include <JuceHeader.h>
 #include <RTNeural/RTNeural.h>
-using ModelType = RTNeural::ModelT<float, 1, 1, RTNeural::Conv1DT<float,1,1,3,1>, RTNeural::LSTMLayerT<float, 1, 8>, RTNeural::DenseT<float, 8, 1 >> ;
+
 namespace fs = std::filesystem;
 
 
-class NeuralPluginAudioProcessor : public AudioProcessor
+class NeuralPluginAudioProcessor : public juce::AudioProcessor
+
 {
 public:
     //==============================================================================
     NeuralPluginAudioProcessor();
-    ~NeuralPluginAudioProcessor();
+    ~NeuralPluginAudioProcessor() override;
 
     //==============================================================================
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
@@ -39,22 +40,27 @@ public:
     //==============================================================================
     void getStateInformation(MemoryBlock& destData) override;
     void setStateInformation(const void* data, int sizeInBytes) override;
-    void loadModel(std::ifstream& jsonStream, ModelType& model);
+    void setValueKnob1(float knob_value);
+    void setValueKnob2(float knob_value);
+    void setValueKnob3(float knob_value);
+    
 
 private:
     //==============================================================================
-    AudioProcessorValueTreeState parameters;
-
-    // input gain
+    juce::AudioProcessorValueTreeState parameters;
     std::atomic<float>* inGainDbParam = nullptr;
     dsp::Gain<float> inputGain;
+    dsp::ProcessorDuplicator<dsp::IIR::Filter<float>, dsp::IIR::Coefficients<float>> dcBlocker;
 
 
+    float knob_value1 = 0.0f;
+    float knob_value2 = 0.0f;
+    float knob_value3 = 0.0f;
     // models
     std::atomic<float>* modelTypeParam = nullptr;
     std::unique_ptr<RTNeural::Model<float>> models[2];
     // example of model defined at compile-time
 
-    dsp::ProcessorDuplicator<dsp::IIR::Filter<float>, dsp::IIR::Coefficients<float>> dcBlocker;
+   
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(NeuralPluginAudioProcessor)
 };
