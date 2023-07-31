@@ -1,6 +1,7 @@
 # This script is used to convert the audio in frames of 0.5 seconds
 # with a total length of 45 seconds
 
+#%%
 import librosa
 import os
 import numpy as np
@@ -8,10 +9,10 @@ import pandas as pd
 import soundfile as sf
 import random
 
-DATA_AUDIO_DIR = '../../../Music_mp3/DEAM_audio/MEMD_audio'
+DATA_AUDIO_DIR = r'C:\Users\Utente\OneDrive - Politecnico di Milano\Immagini\Documenti\Development\Python\PROJECT-STMAE\PROJECT-STMAE-2023\train_lstm\data\archive\Big_Muff_Audio'
 TARGET_SR = 44100
 AUDIO_LENGTH = 22050
-OUTPUT_DIR = './output'
+OUTPUT_DIR = r'C:\Users\Utente\OneDrive - Politecnico di Milano\Immagini\Documenti\Development\Python\PROJECT-STMAE\PROJECT-STMAE-2023\train_lstm\data\archive\output'
 OUTPUT_DIR_TRAIN = os.path.join(OUTPUT_DIR, 'train')
 OUTPUT_DIR_TEST = os.path.join(OUTPUT_DIR, 'test')
 
@@ -33,7 +34,7 @@ def read_audio_from_filename(filename, shift = 0):
     audio = []
     for i in range(60):
         line = librosa.load(filename,
-                            offset=15.0+i/2, duration=0.5, sr=TARGET_SR)
+                            offset=i/2, duration=0.5, sr=TARGET_SR)
         line = librosa.effects.pitch_shift(line[0], sr = TARGET_SR, n_steps = shift)
         audio.append(librosa.util.normalize(line))
     return audio
@@ -50,12 +51,12 @@ def convert_data(data_augumentation = 0):
     for x_i in path:
         print(x_i)
         audio_buf = read_audio_from_filename(
-            os.path.join(DATA_AUDIO_DIR, (x_i+'.mp3')))
+            os.path.join(DATA_AUDIO_DIR, (x_i+'.wav')))
         
         # With Data augumentation
         if(data_augumentation == 1):
             audio_buf_shift = read_audio_from_filename(
-            os.path.join(DATA_AUDIO_DIR, (x_i+'.mp3')), shift=random.choice([-1,1]))
+            os.path.join(DATA_AUDIO_DIR, (x_i+'.wav')), shift=random.choice([-1,1]))
             for k, (audio_sample, audio_sample_shift) in enumerate(zip(audio_buf, audio_buf_shift)):
             
                 # Zero padding if the sample is short)
@@ -100,10 +101,17 @@ def extract_input_target():
 
     A list of song paths
     """
-    path_arousal = r'../../../Music_mp3/DEAM_Annotations/annotations/annotations averaged per song/dynamic (per second annotations)/arousal.csv'
+    path_knobs = r'C:\Users\Utente\OneDrive - Politecnico di Milano\Immagini\Documenti\Development\Python\PROJECT-STMAE\PROJECT-STMAE-2023\train_lstm\data\archive\big_muff.csv'
 
-    data_arousal = pd.read_csv(path_arousal)
+    data_knobs = pd.read_csv(path_knobs)
 
-    path = data_arousal['song_id'].apply(lambda x: str(x))
 
-    return path
+    paths = data_knobs['path'].str.replace(".wav", "")
+    return paths
+
+#%%
+path = extract_input_target()
+
+#%%
+convert_data()
+# %%

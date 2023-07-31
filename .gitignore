@@ -9,3 +9,7 @@ build
 Neural Plugin/Builds
 
 runs
+
+#dataset
+train_lstm/data/archive/output
+train_lstm/data/archive/Big_Muff_Audio
