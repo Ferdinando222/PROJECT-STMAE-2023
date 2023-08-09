@@ -1,13 +1,17 @@
 import os
 import pandas as pd
 import tensorflow as tf
+
 class MyDataLoader:
     def __init__(self, path_input, path_output, path_knobs):
         self.path_input_audio, self.path_output_audio, self.knobs_labels = self.extract_input_target(path_input,
                                                                                                      path_output,
                                                                                                      path_knobs)
+        print("ok")
         self.dataset = self.get_dataset(self.path_input_audio, self.path_output_audio, self.knobs_labels)
+        print("ok")
         self.train_ds, self.val_ds = self.prepare_for_training(self.dataset)
+        print("ok")
 
     def extract_input_target(self, path_in, path_out, path_knobs):
         path_input_audio = path_in
@@ -26,7 +30,7 @@ class MyDataLoader:
         data_knobs = data_knobs.drop(columns=['path'])
         data_knobs = data_knobs.iloc[:, :4]
         data_knobs = data_knobs.values
-        data_knobs = [item for item in data_knobs for _ in range(60)]
+        data_knobs = [item for item in data_knobs for _ in range(380)]
         return path_input_audio, path_output_audio, data_knobs
 
     def get_dataset(self, input_path, output_path, knob_labels):
@@ -61,7 +65,7 @@ class MyDataLoader:
                 file_list.append(os.path.join(folder, file))
         return file_list
 
-    def prepare_for_training(self, ds, batch_size=512, shuffle_buffer_size=1024):
+    def prepare_for_training(self, ds, batch_size=500, shuffle_buffer_size=1024):
 
         dataset = ds.map(lambda x, y, z: self.generate_full_dataset(x, y, z))
         dataset = dataset.shuffle(shuffle_buffer_size)
@@ -105,7 +109,6 @@ class MyDataLoader:
 
     def split_val(self, input_audio, output_audio):
         train_ratio = 80
-        val_ratio = 10  # proporzione per il set di val
         test_ratio = 10  # proporzione per il set di test
         input_audio = tf.reshape(input_audio, [-1, 4])  # flatten the audio_fragment
         output_audio = tf.reshape(output_audio, [-1, 1])  # flatten the audio_fragment
@@ -121,8 +124,6 @@ class MyDataLoader:
         return input_audio, output_audio
 
     def map_knob_to_audio_fragment(self, audio_fragment, knob_labels):
-        shape_fragments = tf.shape(audio_fragment)
-        shape_label = tf.shape(knob_labels)
         knob_labels = tf.cast(knob_labels, tf.float32)
         audio_fragment = tf.reshape(audio_fragment, [-1, 1])  # flatten the audio_fragment
         knob_labels = tf.reshape(knob_labels, [-1, 1])
@@ -131,3 +132,4 @@ class MyDataLoader:
         combined_tensor = tf.concat([audio_fragment, knob_labels], axis=-1)
         combined_tensor = tf.reshape(combined_tensor, (22050, 4))
         return combined_tensor
+

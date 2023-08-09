@@ -103,9 +103,9 @@ void NeuralPluginAudioProcessorEditor::resized()
 
 
     // Position the knobs horizontally at the top
-    knob1.setBounds(0, getHeight()/2, getWidth() / 3, rowHeight * 1.5);
-    knob2.setBounds(getWidth() / 3, getHeight()/2, getWidth() / 3, rowHeight * 1.5);
-    knob3.setBounds(getWidth() * 2 / 3, getHeight()/2, getWidth() / 3, rowHeight * 1.5);
+    knob1.setBounds(0, getHeight()/3, getWidth() / 3, rowHeight * 1.5);
+    knob2.setBounds(getWidth() / 3, getHeight()/3, getWidth() / 3, rowHeight * 1.5);
+    knob3.setBounds(getWidth() * 2 / 3, getHeight()/3, getWidth() / 3, rowHeight * 1.5);
 
     // Position the "Open" button centered at the bottom
     open.setBounds(getWidth() / 4, getHeight() - rowHeight * 1.5, getWidth() / 2, rowHeight * 1.5);
