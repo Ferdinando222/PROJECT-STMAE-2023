@@ -25,17 +25,7 @@ NeuralPluginAudioProcessor::NeuralPluginAudioProcessor() :
     inGainDbParam = parameters.getRawParameterValue("gain_db");
     modelTypeParam = parameters.getRawParameterValue("model_type");
 
-    auto modelFilePath = "C:/Users/Utente/OneDrive - Politecnico di Milano/Immagini/Documenti/Development/Python/PROJECT-STMAE/neural3.json";
-    assert(std::filesystem::exists(modelFilePath));
-
-    std::ifstream jsonStream(modelFilePath, std::ifstream::binary);
-    nlohmann::json jsonInput;
-    jsonStream >> jsonInput;
-    models[0] = RTNeural::json_parser::parseJson<float>(jsonInput);
-    std::ifstream jsonStream1(modelFilePath, std::ifstream::binary);
-    nlohmann::json jsonInput1;
-    jsonStream1 >> jsonInput1;
-    models[1] = RTNeural::json_parser::parseJson<float>(jsonInput1);
+    DBG("LEGGO");
 
 }
 
@@ -114,8 +104,6 @@ void NeuralPluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPer
     inputGain.prepare(spec);
     inputGain.setRampDurationSeconds(0.05);
     dcBlocker.prepare(spec);
-    models[0]->reset();
-    models[1]->reset();
 }
 
 void NeuralPluginAudioProcessor::releaseResources()
@@ -141,37 +129,34 @@ bool NeuralPluginAudioProcessor::isBusesLayoutSupported(const BusesLayout& layou
 
 void NeuralPluginAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    dsp::AudioBlock<float> block(buffer);
-    dsp::ProcessContextReplacing<float> context(block);
+    if (fileSelected) {
+        dsp::AudioBlock<float> block(buffer);
+        dsp::ProcessContextReplacing<float> context(block);
 
-    //inputGain.setGainDecibels(inGainDbParam->load() + 25.0f);
-    //inputGain.process(context);
-    juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear(i, 0, buffer.getNumSamples());
+        juce::ScopedNoDenormals noDenormals;
+        auto totalNumInputChannels = getTotalNumInputChannels();
+        auto totalNumOutputChannels = getTotalNumOutputChannels();
+        for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+            buffer.clear(i, 0, buffer.getNumSamples());
 
 
-    // use compile-time model
+        // use compile-time model
 
-    for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
-    {
-        auto* x = buffer.getWritePointer(ch);
-        for (int n = 0; n < buffer.getNumSamples(); ++n)
+        for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
         {
-            float input[] = {x[n],knob_value1,knob_value2,knob_value3};
+            auto* x = buffer.getWritePointer(ch);
+            for (int n = 0; n < buffer.getNumSamples(); ++n)
+            {
+                float input[] = { x[n],knob_value1,knob_value2,knob_value3 };
 
-            x[n] =( models[ch]->forward(input));
+                x[n] = (models[ch]->forward(input));
 
-            DBG(x[n]);
+            }
         }
+
+
+        ignoreUnused(midiMessages);
     }
-
-    dcBlocker.process(context);
-    buffer.applyGain(5.0f);
-
-    ignoreUnused(midiMessages);
 }
 
 //==============================================================================
@@ -209,6 +194,25 @@ void NeuralPluginAudioProcessor::setValueKnob2(float knob_value)
 void NeuralPluginAudioProcessor::setValueKnob3(float knob_value)
 {
     knob_value3 = knob_value;
+}
+
+void NeuralPluginAudioProcessor::setFilePath(const char* path)
+{
+    DBG("ENTRO");
+    modelFilePath = path;
+    std::ifstream jsonStream(modelFilePath, std::ifstream::binary);
+    nlohmann::json jsonInput;
+    jsonStream >> jsonInput;
+    models[0] = RTNeural::json_parser::parseJson<float>(jsonInput);
+    std::ifstream jsonStream1(modelFilePath, std::ifstream::binary);
+    nlohmann::json jsonInput1;
+    jsonStream1 >> jsonInput1;
+    models[1] = RTNeural::json_parser::parseJson<float>(jsonInput1);
+    models[0]->reset();
+    models[1]->reset();
+    if(!fileSelected) {
+        fileSelected = true;
+    }
 }
 
 

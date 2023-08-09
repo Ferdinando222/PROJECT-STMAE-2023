@@ -8,6 +8,7 @@ project(NEURALPLUGIN VERSION 0.0.1)
 add_subdirectory("C:/Users/Utente/OneDrive - Politecnico di Milano/Desktop/JUCE" ./JUCE)                    # If you've put JUCE in a subdirectory called JUCE
 set(RTNEURAL_STL ON CACHE BOOL "Use RTNeural with this backend" FORCE)
 add_subdirectory(RTNeural ${CMAKE_CURRENT_BINARY_DIR}/RTNeural)
+add_compile_definitions(JUCE_MODAL_LOOPS_PERMITTED=1)
 include_directories(RTNeural)
 
 juce_add_plugin(NeuralPlugin
@@ -66,6 +67,7 @@ target_link_libraries(NeuralPlugin
     PRIVATE
         juce::juce_audio_utils
 	juce::juce_dsp
+	juce::juce_gui_basics
     PUBLIC
 	BinaryData
         juce::juce_recommended_config_flags

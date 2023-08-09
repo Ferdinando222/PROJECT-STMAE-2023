@@ -16,7 +16,8 @@
 */
 class NeuralPluginAudioProcessorEditor  : public juce::AudioProcessorEditor,
     
-                                          public juce::Slider::Listener
+                                          public juce::Slider::Listener,
+                                          public juce::Button::Listener
 {
 public:
     NeuralPluginAudioProcessorEditor (NeuralPluginAudioProcessor&);
@@ -26,6 +27,7 @@ public:
     void paint (juce::Graphics&) override;
     void sliderValueChanged(juce::Slider* slider) override;
     void resized() override;
+    void buttonClicked(juce::Button* button) override;
 
 
 private:
@@ -35,6 +37,11 @@ private:
     juce::Slider knob1;
     juce::Slider knob2;
     juce::Slider knob3;
+    juce::TextButton open;
+    juce::File selectedFile;
+    juce::Label knobLabel1, knobLabel2, knobLabel3;
+
+ 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NeuralPluginAudioProcessorEditor)
 };

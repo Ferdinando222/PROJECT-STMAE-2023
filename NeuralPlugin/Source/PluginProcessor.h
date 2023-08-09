@@ -43,6 +43,8 @@ public:
     void setValueKnob1(float knob_value);
     void setValueKnob2(float knob_value);
     void setValueKnob3(float knob_value);
+
+    void setFilePath(const char* path);
     
 
 private:
@@ -52,7 +54,7 @@ private:
     dsp::Gain<float> inputGain;
     dsp::ProcessorDuplicator<dsp::IIR::Filter<float>, dsp::IIR::Coefficients<float>> dcBlocker;
 
-
+    bool fileSelected = 0;
     float knob_value1 = 0.0f;
     float knob_value2 = 0.0f;
     float knob_value3 = 0.0f;
@@ -60,6 +62,8 @@ private:
     std::atomic<float>* modelTypeParam = nullptr;
     std::unique_ptr<RTNeural::Model<float>> models[2];
     // example of model defined at compile-time
+
+    const char* modelFilePath =" ";
 
    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(NeuralPluginAudioProcessor)

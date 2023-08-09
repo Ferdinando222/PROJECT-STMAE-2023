@@ -9,15 +9,15 @@ import pandas as pd
 import soundfile as sf
 import random
 
-DATA_AUDIO_DIR = r'C:\Users\Utente\OneDrive - Politecnico di Milano\Immagini\Documenti\Development\Python\PROJECT-STMAE\PROJECT-STMAE-2023\train_lstm\data\archive\Big_Muff_Audio'
+DATA_AUDIO_DIR = r'C:\Users\Utente\OneDrive - Politecnico di Milano\Immagini\Documenti\Development\Python\PROJECT-STMAE\PROJECT-STMAE-2023\train_lstm\data\archive\input'
 TARGET_SR = 44100
 AUDIO_LENGTH = 22050
 OUTPUT_DIR = r'C:\Users\Utente\OneDrive - Politecnico di Milano\Immagini\Documenti\Development\Python\PROJECT-STMAE\PROJECT-STMAE-2023\train_lstm\data\archive\output'
-OUTPUT_DIR_TRAIN = os.path.join(OUTPUT_DIR, 'train')
+OUTPUT_DIR_TRAIN = os.path.join(OUTPUT_DIR, 'train_input')
 OUTPUT_DIR_TEST = os.path.join(OUTPUT_DIR, 'test')
 
 
-def read_audio_from_filename(filename, shift = 0):
+def read_audio_from_filename(filename):
     """Read audio from the specified path and .
 
     **Args:**
@@ -32,14 +32,13 @@ def read_audio_from_filename(filename, shift = 0):
 
     """
     audio = []
-    for i in range(60):
-        line = librosa.load(filename,
+    for i in range(380):
+        line,_ = librosa.load(filename,
                             offset=i/2, duration=0.5, sr=TARGET_SR)
-        line = librosa.effects.pitch_shift(line[0], sr = TARGET_SR, n_steps = shift)
         audio.append(librosa.util.normalize(line))
     return audio
 
-def convert_data(data_augumentation = 0):
+def convert_data():
     """Reads audio from the specified path and converts it to WAV format in PCM 16 bit format.
 
     **Args:**
@@ -48,38 +47,12 @@ def convert_data(data_augumentation = 0):
     """
 
     path = extract_input_target()
-    for x_i in path:
+    for x_i in range(1):
         print(x_i)
         audio_buf = read_audio_from_filename(
-            os.path.join(DATA_AUDIO_DIR, (x_i+'.wav')))
+            os.path.join(DATA_AUDIO_DIR, ('clean_signal'+'.wav')))
         
-        # With Data augumentation
-        if(data_augumentation == 1):
-            audio_buf_shift = read_audio_from_filename(
-            os.path.join(DATA_AUDIO_DIR, (x_i+'.wav')), shift=random.choice([-1,1]))
-            for k, (audio_sample, audio_sample_shift) in enumerate(zip(audio_buf, audio_buf_shift)):
-            
-                # Zero padding if the sample is short)
-
-                if len(audio_sample) < AUDIO_LENGTH:
-                    audio_sample = np.concatenate((audio_sample, np.zeros(
-                    shape=(AUDIO_LENGTH - len(audio_sample)))))
-            
-                if len(audio_sample_shift) < AUDIO_LENGTH:
-                    audio_sample_shift = np.concatenate((audio_sample_shift, np.zeros(
-                    shape=(AUDIO_LENGTH - len(audio_sample_shift)))))
-
-                output_folder = OUTPUT_DIR_TRAIN
-                output_filename = os.path.join(
-                output_folder, str(x_i) + str('_') + str(k)+'.wav')
-                sf.write(output_filename,
-                     audio_sample, TARGET_SR, subtype='PCM_16')
-
-                output_filename = os.path.join(
-                output_folder, str(int(x_i)+1000) + str('_') + str(k)+'.wav')
-                sf.write(output_filename,
-                    audio_sample_shift, TARGET_SR, subtype='PCM_16')
-
+        print(len(audio_buf))
         for k, (audio_sample) in enumerate(audio_buf):
             
             # Zero padding if the sample is short
@@ -109,8 +82,6 @@ def extract_input_target():
     paths = data_knobs['path'].str.replace(".wav", "")
     return paths
 
-#%%
-path = extract_input_target()
 
 #%%
 convert_data()
