@@ -16,6 +16,22 @@ NeuralPluginAudioProcessorEditor::NeuralPluginAudioProcessorEditor (NeuralPlugin
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setSize(600, 500);
+    setBackground(juce::Colours::darkgrey);
+    //Create Library
+    addAndMakeVisible(library);
+    addAndMakeVisible(knob1);
+    addAndMakeVisible(knob2);
+    addAndMakeVisible(knob3);
+
+    //Create and configure a "Save model" button
+    addAndMakeVisible(save);
+    save.addListener(this);
+    save.setButtonText("Save Model");
+
+    // Create and configure an "Open Model" button
+    addAndMakeVisible(open);
+    open.addListener(this);
+    open.setButtonText("Open Model");
 }
 
 NeuralPluginAudioProcessorEditor::~NeuralPluginAudioProcessorEditor()
@@ -26,32 +42,10 @@ NeuralPluginAudioProcessorEditor::~NeuralPluginAudioProcessorEditor()
 void NeuralPluginAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    g.fillAll (backgroundColour);
 
     g.setColour (juce::Colours::white);
     g.setFont (15.0f);
-
-    // Create and configure knobs with labels
-    addAndMakeVisible(knob1);
-    knob1.setRange(0, 1);
-
-    addAndMakeVisible(knob2);
-    knob2.setRange(0, 1);
-
-    addAndMakeVisible(knob3);
-    knob3.setRange(0, 1);
-
-    // Set knob styles and listeners
-    knob1.setSliderStyle(juce::Slider::RotaryHorizontalDrag);
-    knob1.addListener(this);
-
-    knob2.setSliderStyle(juce::Slider::RotaryHorizontalDrag);
-    knob2.addListener(this);
-
-    knob3.setSliderStyle(juce::Slider::RotaryHorizontalDrag);
-    knob3.addListener(this);
-
-    // Attach labels to knobs
 
     // Add labels to the main component
     addAndMakeVisible(knobLabel1);
@@ -63,52 +57,40 @@ void NeuralPluginAudioProcessorEditor::paint (juce::Graphics& g)
     knobLabel2.setText("Tone", juce::NotificationType::dontSendNotification);
     knobLabel3.setText("Saturation", juce::NotificationType::dontSendNotification);
   
-    knobLabel1.attachToComponent(&knob1, false);
-    knobLabel2.attachToComponent(&knob2, false);
-    knobLabel3.attachToComponent(&knob3, false);
+    knobLabel1.attachToComponent(knob1, false);
+    knobLabel2.attachToComponent(knob2, false);
+    knobLabel3.attachToComponent(knob3, false);
 
 
-    // Create and configure an "Open Model" button
-    addAndMakeVisible(open);
-    open.addListener(this);
-    open.setButtonText("Open Model");
+
+
 
 
 }
 
-void NeuralPluginAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
-{
-    if (slider == &knob1)
-    {
-        audioProcessor.setValueKnob1(float(knob1.getValue()));
-    }
-
-    if (slider == &knob2)
-    {
-        audioProcessor.setValueKnob2(float(knob2.getValue()));
-    }
-
-    if (slider == &knob3)
-    {
-        audioProcessor.setValueKnob3(float(knob3.getValue()));
-    }
-
-}
 
 void NeuralPluginAudioProcessorEditor::resized()
 {
+    juce::Rectangle<int> bounds = getLocalBounds();
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
     float rowHeight = getHeight() / 5;
 
 
     // Position the knobs horizontally at the top
-    knob1.setBounds(0, getHeight()/3, getWidth() / 3, rowHeight * 1.5);
-    knob2.setBounds(getWidth() / 3, getHeight()/3, getWidth() / 3, rowHeight * 1.5);
-    knob3.setBounds(getWidth() * 2 / 3, getHeight()/3, getWidth() / 3, rowHeight * 1.5);
+    knob1->setBounds(0, getHeight() / 3, getWidth() / 4, rowHeight * 1.5);
+    knob2->setBounds(getWidth() / 4, getHeight() / 3, getWidth() / 4, rowHeight * 1.5);
+    knob3->setBounds(getWidth() / 2, getHeight() / 3, getWidth() / 4, rowHeight * 1.5);
 
-    // Position the "Open" button centered at the bottom
-    open.setBounds(getWidth() / 4, getHeight() - rowHeight * 1.5, getWidth() / 2, rowHeight * 1.5);
+    //Position of the buttons
+
+    open.setBounds(getWidth() / 4, getHeight() - rowHeight * 1.5, getWidth() / 4, rowHeight * 1.5);
+
+    save.setBounds(getWidth() / 2, getHeight() - rowHeight * 1.5, getWidth() / 4, rowHeight * 1.5);
+
+
+    //Position of Library
+    library.setBounds(getWidth()/1.3, 0, getWidth() / 4, getHeight());
 }
 
 void NeuralPluginAudioProcessorEditor::buttonClicked(juce::Button* button)
@@ -130,5 +112,16 @@ void NeuralPluginAudioProcessorEditor::buttonClicked(juce::Button* button)
         }
     }
 
+    if (button == &save)
+    {
+        audioProcessor.saveModel();
+    }
+
 }
+
+void NeuralPluginAudioProcessorEditor::setBackground(juce::Colour colour)
+{
+    backgroundColour = colour;
+}
+
 

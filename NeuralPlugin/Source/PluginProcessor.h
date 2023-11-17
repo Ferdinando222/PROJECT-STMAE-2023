@@ -43,9 +43,8 @@ public:
     void setValueKnob1(float knob_value);
     void setValueKnob2(float knob_value);
     void setValueKnob3(float knob_value);
-
     void setFilePath(const char* path);
-    
+    void saveModel();
 
 private:
     //==============================================================================
@@ -63,8 +62,7 @@ private:
     std::unique_ptr<RTNeural::Model<float>> models[2];
     // example of model defined at compile-time
 
-    const char* modelFilePath =" ";
-
+    const char* modelFilePath;
    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(NeuralPluginAudioProcessor)
 };

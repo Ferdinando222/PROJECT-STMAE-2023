@@ -38,14 +38,15 @@ target_sources(NeuralPlugin
     NeuralPlugin/Source/PluginProcessor.cpp
     NeuralPlugin/Source/PluginEditor.h
     NeuralPlugin/Source/PluginProcessor.h
+    NeuralPlugin/Source/Library.h
+    NeuralPlugin/Source/Library.cpp
+    NeuralPlugin/Source/CustomKnob.h
+    NeuralPlugin/Source/CustomKnob.cpp
+   
 )
 
-juce_add_binary_data(BinaryData SOURCES
-    train_lstm/neural_net_weights.json
-)
 
-set_target_properties(BinaryData PROPERTIES
-    POSITION_INDEPENDENT_CODE TRUE)
+
 
 target_compile_definitions(NeuralPlugin
     PUBLIC # 
@@ -69,7 +70,6 @@ target_link_libraries(NeuralPlugin
 	juce::juce_dsp
 	juce::juce_gui_basics
     PUBLIC
-	BinaryData
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags)
@@ -77,4 +77,3 @@ target_link_libraries(NeuralPlugin
 
 
 target_link_libraries(NeuralPlugin PUBLIC RTNeural)
-

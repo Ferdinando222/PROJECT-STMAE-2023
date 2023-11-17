@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <filesystem>
+#include <juce_core/juce_core.h> 
 //==============================================================================
 
 NeuralPluginAudioProcessor::NeuralPluginAudioProcessor() :
@@ -140,8 +141,6 @@ void NeuralPluginAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBu
             buffer.clear(i, 0, buffer.getNumSamples());
 
 
-        // use compile-time model
-
         for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
         {
             auto* x = buffer.getWritePointer(ch);
@@ -198,13 +197,12 @@ void NeuralPluginAudioProcessor::setValueKnob3(float knob_value)
 
 void NeuralPluginAudioProcessor::setFilePath(const char* path)
 {
-    DBG("ENTRO");
     modelFilePath = path;
-    std::ifstream jsonStream(modelFilePath, std::ifstream::binary);
+    std::ifstream jsonStream(path, std::ifstream::binary);
     nlohmann::json jsonInput;
     jsonStream >> jsonInput;
     models[0] = RTNeural::json_parser::parseJson<float>(jsonInput);
-    std::ifstream jsonStream1(modelFilePath, std::ifstream::binary);
+    std::ifstream jsonStream1(path, std::ifstream::binary);
     nlohmann::json jsonInput1;
     jsonStream1 >> jsonInput1;
     models[1] = RTNeural::json_parser::parseJson<float>(jsonInput1);
@@ -215,6 +213,39 @@ void NeuralPluginAudioProcessor::setFilePath(const char* path)
     }
 }
 
+void NeuralPluginAudioProcessor::saveModel()
+{
+    if (modelFilePath != nullptr)
+    {
+        DBG(modelFilePath);
+
+        juce::File pluginFile = juce::File::getSpecialLocation(juce::File::SpecialLocationType::currentExecutableFile);
+        juce::File dataFolder = pluginFile.getParentDirectory().getChildFile("model");
+
+        if (!dataFolder.exists())
+        {
+            dataFolder.createDirectory();
+        }
+        DBG(dataFolder.getFullPathName());
+
+        juce::File originalFile(modelFilePath);
+        juce::File copiedFile = dataFolder.getChildFile(originalFile.getFileName());
+
+        if (originalFile.copyFileTo(copiedFile))
+        {
+            DBG("Modello salvato correttamente.");
+        }
+        else
+        {
+            DBG("Errore nel salvataggio del modello.");
+        }
+    }
+    else
+    {
+        DBG("Percorso del modello non valido.");
+    }
+}
+
 
 //==============================================================================
 // This creates new instances of the plugin..
@@ -222,3 +253,8 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new NeuralPluginAudioProcessor();
 }
+
+
+
+
+

@@ -10,13 +10,13 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "Library.h"
+#include "CustomKnob.h"
 
 //==============================================================================
 /**
 */
 class NeuralPluginAudioProcessorEditor  : public juce::AudioProcessorEditor,
-    
-                                          public juce::Slider::Listener,
                                           public juce::Button::Listener
 {
 public:
@@ -25,21 +25,30 @@ public:
 
     //==============================================================================
     void paint (juce::Graphics&) override;
-    void sliderValueChanged(juce::Slider* slider) override;
     void resized() override;
     void buttonClicked(juce::Button* button) override;
+    void setBackground(juce::Colour colour);
+
+
+
 
 
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     NeuralPluginAudioProcessor& audioProcessor;
-    juce::Slider knob1;
-    juce::Slider knob2;
-    juce::Slider knob3;
+
+    CustomKnob* knob1 = new CustomKnob("volume",audioProcessor);
+    CustomKnob* knob2 = new CustomKnob("tone",audioProcessor);
+    CustomKnob* knob3 = new CustomKnob("distortion",audioProcessor);
+
     juce::TextButton open;
+    juce::TextButton save;
     juce::File selectedFile;
     juce::Label knobLabel1, knobLabel2, knobLabel3;
+    juce::Colour backgroundColour;
+    Library library;
+
 
  
 
